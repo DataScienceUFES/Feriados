@@ -11,7 +11,8 @@ sql_conn = sqlite3.connect("calendarific.db")
 cursor = sql_conn.cursor()
 
 # create table
-sql_query = """ CREATE TABLE IF NOT EXISTS calendarific (
+sql_query = """ 
+    CREATE TABLE IF NOT EXISTS calendarific (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT,
     description TEXT,
@@ -20,14 +21,14 @@ sql_query = """ CREATE TABLE IF NOT EXISTS calendarific (
     year INTEGER,
     month INTEGER,
     day INTEGER
-    )"""
+    )
+"""
 
 cur = cursor.execute(sql_query)
 cur.connection.commit()
 
 # make request to calendarific
-URL = "https://calendarific.com/api/v2/holidays?api_key={}".format(
-    api_key)
+URL = f"https://calendarific.com/api/v2/holidays?api_key={api_key}"
 
 country = 'BR'
 year = '2022'
@@ -42,8 +43,8 @@ feriados = response.json().get('response').get('holidays')
 for feriado in feriados:
     name = feriado.get('name')
     description = feriado.get('description')
-    type = feriado.get('type')
-    type = ', '.join(type)
+    tipo = feriado.get('type')
+    tipo = ', '.join(tipo)
     country = feriado.get('country').get('name')
     year = feriado.get('date').get('datetime').get('year')
     month = feriado.get('date').get('datetime').get('month')
@@ -51,9 +52,9 @@ for feriado in feriados:
 
     cursor.execute(
         """INSERT INTO calendarific (name, description, type, country, year, month, day) VALUES (?, ?, ?, ?, ?, ?, ?)""",  # noqa
-        (name, description, type, country, year, month, day))
+        (name, description, tipo, country, year, month, day))
 
     cursor.connection.commit()
 
-    print("Added {};".format(name))
+    print(f"Added {name};")
 print("Done.")
